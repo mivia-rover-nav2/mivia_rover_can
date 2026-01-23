@@ -44,6 +44,8 @@ qtcreator-*
 
 *~
 
+src/ros2_socket_can/
+
 # Emacs
 .#*
 
