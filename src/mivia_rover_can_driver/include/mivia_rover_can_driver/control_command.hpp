@@ -5,97 +5,51 @@
 #include <memory>
  
 #include <rclcpp/rclcpp.hpp>
-
 #include <std_msgs/msg/bool.hpp>
-
 #include <can_msgs/msg/frame.hpp>
 
-
-// include- msgs header file
-// Example: #include "pix_driver_msgs/BrakeCommand.h"
-// #include pix_driver_msgs/protocols["name"].h
 #include <mivia_rover_can_msgs/msg/reference.hpp>
-
-
-
-// include- Parse header file
-// Example: #include "brake_command_101.hpp"
-// #include protocols["name"].cpp
 #include <mivia_rover_can_driver/reference.hpp>
 
 
-namespace mivia_rover_can_driver
-{
-namespace control_command
-{
+namespace mivia_rover_can_driver{
+  namespace control_command{
 
-/**
- * @brief param structure of control command node
- * @param base_frame_id frame id of vehicle
- * @param loop_rate loop rate of publishers in hz
- * @param command_timeout_ms timeout threshold of control command msg from control converter in ms
- */
-struct Param
-{
-  std::string base_frame_id;
-  double loop_rate;
-  int command_timeout_ms;
-};
+  /**
+   * @brief param structure of control command node
+   * @param base_frame_id frame id of vehicle
+   * @param loop_rate loop rate of publishers in hz
+   * @param command_timeout_ms timeout threshold of control command msg from control converter in ms
+   */
+    struct Param
+    {
+      std::string base_frame_id;
+      double loop_rate;
+      int command_timeout_ms;
+    };
 
-class ControlCommand : public rclcpp::Node
-{
-private:
-  // parameters of node
-  Param param_;
+    class ControlCommand : public rclcpp::Node{
+    private:
+      
+      Param param_;
+      rclcpp::Subscription<mivia_rover_can_msgs::msg::Reference>::SharedPtr reference_sub_;
+      mivia_rover_can_msgs::msg::Reference::ConstSharedPtr reference_ptr_;
+      
+      Reference reference_entity_;
+      rclcpp::Time reference_received_time_;
 
-  // subscribers
-  // example rclcpp::Subscription<A2vBrakeCtrl>::SharedPtr a2v_brake_ctrl_sub_;
-  rclcpp::Subscription<mivia_rover_can_msgs::msg::Reference>::SharedPtr reference_sub_;
+      rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr can_frame_pub_;
+      can_msgs::msg::Frame::ConstSharedPtr reference_can_ptr_;
 
+      rclcpp::TimerBase::SharedPtr timer_;
 
-  // msgs
-  // example A2vBrakeCtrl::ConstSharedPtr brake_ctrl_ptr_;
-  mivia_rover_can_msgs::msg::Reference::ConstSharedPtr reference_ptr_;
+    public:
+      ControlCommand();
+    
+      void callbackReference(const mivia_rover_can_msgs::msg::Reference::ConstSharedPtr & msg);
+      void timerCallback();
 
-
-  // control command structures
-  // example A2vdrivectrl130 a2v_drivectrl_130_entity_;
-  Reference reference_entity_;
-
-
-  // msg received timestamp
-  // example rclcpp::Time drive_command_received_time_;
-  rclcpp::Time reference_received_time_;
-
-
-  // state control
-  rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr engage_ctrl_sub_;
-  bool is_engage_;
-
-  // publishers to can card driver
-  rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr can_frame_pub_;
-
-  // publishing can msgs
-  // example can_msgs::msg::Frame::ConstSharedPtr brake_ctrl_can_ptr_;
-  can_msgs::msg::Frame::ConstSharedPtr reference_can_ptr_;
-
-
-  // timer
-  rclcpp::TimerBase::SharedPtr timer_;
-
-public:
-  ControlCommand();
-  // calback functions
-  // example
-  // void callbackBrakeCtrl(const A2vBrakeCtrl::ConstSharedPtr & msg);
-  void callbackReference(const mivia_rover_can_msgs::msg::Reference::ConstSharedPtr & msg);
-
-
-  void callbackEngage(const std_msgs::msg::Bool::ConstSharedPtr & msg);
-  void timerCallback();
-
-};
-
-} // control_command
-} // mivia_rover_can_driver
+    };
+  } 
+} 
 #endif // PIX_HOOKE_DRIVER__CONTROL_COMMAND_HPP_

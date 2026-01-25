@@ -6,10 +6,11 @@
 class ImuZ {
 public:
     static const uint32_t ID = 0xE;
+
     ImuZ();
     void Parse();
     void update_bytes(uint8_t bytes_data[8]);
-    // singal
+    
     int gyro_z_;
     int accel_z_;
     

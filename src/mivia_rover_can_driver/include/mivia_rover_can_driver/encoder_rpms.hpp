@@ -6,10 +6,11 @@
 class EncoderRpms {
 public:
     static const uint32_t ID = 0xB;
+    
     EncoderRpms();
     void Parse();
     void update_bytes(uint8_t bytes_data[8]);
-    // singal
+    
     int front_left_;
     int rear_left_;
     int front_right_;

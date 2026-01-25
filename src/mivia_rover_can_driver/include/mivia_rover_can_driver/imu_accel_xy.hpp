@@ -6,10 +6,11 @@
 class ImuAccelXy {
 public:
     static const uint32_t ID = 0xD;
+
     ImuAccelXy();
     void Parse();
     void update_bytes(uint8_t bytes_data[8]);
-    // singal
+    
     int accel_x_;
     int accel_y_;
     

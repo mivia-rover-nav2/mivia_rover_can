@@ -6,10 +6,11 @@
 class ImuGyroXy {
 public:
     static const uint32_t ID = 0xC;
+
     ImuGyroXy();
     void Parse();
     void update_bytes(uint8_t bytes_data[8]);
-    // singal
+    
     int gyro_x_;
     int gyro_y_;
     
