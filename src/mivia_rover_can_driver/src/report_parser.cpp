@@ -1,5 +1,7 @@
 #include <mivia_rover_can_driver/report_parser.hpp>
 
+#define CONV_CONST (1.0/182.0)
+
 namespace mivia_rover_can_driver{
   namespace report_parser{
     
@@ -63,10 +65,10 @@ namespace mivia_rover_can_driver{
       encoder_rpms_entity_.Parse();
 
       encoder_rpms_msg.header = header;
-      encoder_rpms_msg.front_left = encoder_rpms_entity_.front_left_;
-      encoder_rpms_msg.rear_left = encoder_rpms_entity_.rear_left_;
-      encoder_rpms_msg.front_right = encoder_rpms_entity_.front_right_;
-      encoder_rpms_msg.rear_right = encoder_rpms_entity_.rear_right_;
+      encoder_rpms_msg.front_left  = static_cast<double>(encoder_rpms_entity_.front_left_) * CONV_CONST;
+      encoder_rpms_msg.rear_left   = static_cast<double>(encoder_rpms_entity_.rear_left_) * CONV_CONST;
+      encoder_rpms_msg.front_right = static_cast<double>(encoder_rpms_entity_.front_right_) * CONV_CONST;
+      encoder_rpms_msg.rear_right  = static_cast<double>(encoder_rpms_entity_.rear_right_) * CONV_CONST;
 
       encoder_rpms_ptr_ = std::make_shared<mivia_rover_can_msgs::msg::EncoderRpms>(encoder_rpms_msg);
       break;
