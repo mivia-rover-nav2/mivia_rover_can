@@ -55,7 +55,6 @@ def generate_launch_description():
                 "loop_rate": loop_rate,
                 "use_sim_time": use_sim_time,
             }],
-            # For eventually remapping topics:
-            # remappings=[("input/can_rx", "/qualcosa/can_rx")]
+            remappings=[("input/can_rx", "from_can_bus")]
         ),
     ])

@@ -55,6 +55,6 @@ def generate_launch_description():
                 "loop_rate": loop_rate,
                 "use_sim_time": use_sim_time,
             }],
-            # remappings=[("output/can_tx", "/qualcosa/can_tx")]
+            remappings=[("output/can_tx", "to_can_bus")]
         ),
     ])

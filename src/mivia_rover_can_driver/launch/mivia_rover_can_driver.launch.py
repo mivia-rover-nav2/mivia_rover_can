@@ -72,6 +72,7 @@ def generate_launch_description():
                 "loop_rate": report_loop_rate,
                 "use_sim_time": use_sim_time,
             }],
+            remappings=[("input/can_rx", "from_can_bus")] 
         ),
 
         Node(
@@ -86,5 +87,6 @@ def generate_launch_description():
                 "loop_rate": command_loop_rate,
                 "use_sim_time": use_sim_time,
             }],
+            remappings=[("output/can_tx", "to_can_bus")]
         ),
     ])
