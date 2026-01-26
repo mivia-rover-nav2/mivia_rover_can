@@ -62,7 +62,7 @@ def generate_launch_description():
 
         Node(
             package="mivia_rover_can_driver",
-            executable="mivia_rover_can_driver_report_parser_node",  # <-- sostituisci se necessario
+            executable="mivia_rover_can_driver_report_parser_node",  
             name="report_parser",
             namespace=namespace,
             output="screen",
@@ -76,7 +76,7 @@ def generate_launch_description():
 
         Node(
             package="mivia_rover_can_driver",
-            executable="mivia_rover_can_driver_control_command_node",  # <-- sostituisci se necessario
+            executable="mivia_rover_can_driver_control_command_node",  
             name="control_command",
             namespace=namespace,
             output="screen",
