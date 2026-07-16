@@ -92,7 +92,7 @@ def generate_launch_description():
         DeclareLaunchArgument("base_frame_id", default_value="base_link", description="Base frame per il can_driver."),
 
         # --- socketcan args ---
-        DeclareLaunchArgument("interface", default_value="can0", description="Interfaccia SocketCAN (es. can0)."),
+        DeclareLaunchArgument("interface", default_value="can1", description="Interfaccia SocketCAN (es. can0)."),
         DeclareLaunchArgument("receiver_interval_sec", default_value="0.01", description="Polling receiver (s)."),
         DeclareLaunchArgument("sender_timeout_sec", default_value="0.01", description="Timeout sender (s)."),
         DeclareLaunchArgument("enable_can_fd", default_value="false", description="Abilita CAN-FD."),
