@@ -65,9 +65,48 @@ namespace mivia_rover_can_driver{
             "reference timeout = %f ms.", reference_delta_time_ms);
         } else {
             can_frame_pub_->publish(*reference_can_ptr_);
+
+            auto now_steady_clock = std::chrono::steady_clock::now();
+            uint64_t t_end_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(now_steady_clock.time_since_epoch()).count();
+
+            uint64_t t_strat_ns reference_can_ptr_->header.stamp.sec * 1000000000ULL + reference_can_ptr_->header.stamp.nanosec;
+
+            //Saving in the buffer
+            sixe_t head = log_head_.load(std::memory_order_relaxed);
+            size_t netx_head = (head + 1) % 4096;
+            if (netx_head != log_tail_.load(std::memory_order_acquire)) {
+              log_buffer_[head].t_strat_ns;
+              log_buffer_[head].t_end_ns = t_end_ns;
+              log_head_.store(netx_head, std::memory_order_release);
+              log_cv_.notify_one();
+            }
         }
 
         
+    }
+
+    void ControlCommand::logging_thread_entry_() {
+      std::ofstream log_file("/tmp/log_with_dds.csv", std:ios::out | std::ios::trunc);
+      if (log_file.is_open()) log_file << "t_start_ns,t_end_ns\n";
+
+      while(logging_running_.load()) {
+        size_t tail = log_tail_.load(std::memory_order_relaxed);
+
+        std::unique_lock<std::mutex> lock(log_mutex_);
+        log_cv_.wait(lock, [this, &tail] {
+          return (tail != log_head_.load(std::memory_order_acquire)) || !logging_is_running_.load();
+        });
+        if(!logging_is_running_.load() && (tail == log_head_.load(std::memory_order_acquire))) break;
+
+        size_t head = log_head_.load(std::memory_order_acquire);
+
+        while(tail != head) {
+          log_file << log_buffer_[tail].t_start_ns << "," << log_buffer_[tail].t_end_ns << "\n";
+          tail = (tail + 1) % 4096;
+        }
+        log_tail_.store(tail, std::memory_order_release);
+      }
+      if (log_file.is_open()) log_file.close();
     }
 
   } 
