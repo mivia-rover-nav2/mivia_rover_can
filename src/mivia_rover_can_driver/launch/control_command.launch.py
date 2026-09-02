@@ -43,18 +43,18 @@ def generate_launch_description():
             description="Namespace ROS 2 per il nodo."
         ),
 
-        Node(
-            package="mivia_rover_can_driver",
-            executable="mivia_rover_can_driver_control_command_node",  # <-- sostituisci se il tuo target ha un nome diverso
-            name="control_command",
-            namespace=namespace,
-            output="screen",
-            parameters=[{
-                "base_frame_id": base_frame_id,
-                "command_timeout_ms": command_timeout_ms,
-                "loop_rate": loop_rate,
-                "use_sim_time": use_sim_time,
-            }],
-            remappings=[("output/can_tx", "to_can_bus")]
-        ),
+        # Node(
+        #     package="mivia_rover_can_driver",
+        #     executable="mivia_rover_can_driver_control_command_node",  # <-- sostituisci se il tuo target ha un nome diverso
+        #     name="control_command",
+        #     namespace=namespace,
+        #     output="screen",
+        #     parameters=[{
+        #         "base_frame_id": base_frame_id,
+        #         "command_timeout_ms": command_timeout_ms,
+        #         "loop_rate": loop_rate,
+        #         "use_sim_time": use_sim_time,
+        #     }],
+        #     remappings=[("output/can_tx", "to_can_bus")]
+        # ),
     ])
