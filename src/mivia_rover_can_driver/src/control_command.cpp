@@ -27,6 +27,13 @@ namespace mivia_rover_can_driver{
         this, get_clock(), rclcpp::Rate(param_.loop_rate).period(),
         std::bind(&ControlCommand::timerCallback, this));
     }
+
+    //Starting the logging_thread
+    log_head_.store(0);
+    log_tail_.store(0);
+    logging_is_running_.store(true);
+
+    logging_thread_ = std::thread(&ControlCommand::logging_thread_entry_, this);
   }
 
 
@@ -69,15 +76,15 @@ namespace mivia_rover_can_driver{
             auto now_steady_clock = std::chrono::steady_clock::now();
             uint64_t t_end_ns = std::chrono::duration_cast<std::chrono::nanoseconds>(now_steady_clock.time_since_epoch()).count();
 
-            uint64_t t_strat_ns reference_can_ptr_->header.stamp.sec * 1000000000ULL + reference_can_ptr_->header.stamp.nanosec;
+            uint64_t t_start_ns = reference_can_ptr_->header.stamp.sec * 1000000000ULL + reference_can_ptr_->header.stamp.nanosec;
 
             //Saving in the buffer
-            sixe_t head = log_head_.load(std::memory_order_relaxed);
-            size_t netx_head = (head + 1) % 4096;
-            if (netx_head != log_tail_.load(std::memory_order_acquire)) {
-              log_buffer_[head].t_strat_ns;
+            size_t head = log_head_.load(std::memory_order_relaxed);
+            size_t next_head = (head + 1) % 4096;
+            if (next_head != log_tail_.load(std::memory_order_acquire)) {
+              log_buffer_[head].t_start_ns = t_start_ns;
               log_buffer_[head].t_end_ns = t_end_ns;
-              log_head_.store(netx_head, std::memory_order_release);
+              log_head_.store(next_head, std::memory_order_release);
               log_cv_.notify_one();
             }
         }
@@ -86,10 +93,10 @@ namespace mivia_rover_can_driver{
     }
 
     void ControlCommand::logging_thread_entry_() {
-      std::ofstream log_file("/tmp/log_with_dds.csv", std:ios::out | std::ios::trunc);
+      std::ofstream log_file("/tmp/log_with_dds.csv", std::ios::out | std::ios::trunc);
       if (log_file.is_open()) log_file << "t_start_ns,t_end_ns\n";
 
-      while(logging_running_.load()) {
+      while(logging_is_running_.load()) {
         size_t tail = log_tail_.load(std::memory_order_relaxed);
 
         std::unique_lock<std::mutex> lock(log_mutex_);

@@ -20,19 +20,7 @@
 #include <atomic>
 #include <thread>
 
-struct LogEntry {
-  uint64_t t_strat_ns;
-  uint64_t t_end_ns;
-}
 
-std::array<std::LogEntry, 4096> log_buffer_;
-std::atomic<std::sized_t> log_head_{0};
-std::atomic<std::sized_t> log_tail_{0};
-std::thread logging_thread_;
-std::atomic<bool> logging_is_running_{false};
-std::mutex log_mutex_;
-std::conditin_variable log_cv_;
-void logging_thread_entry_();
 
 namespace mivia_rover_can_driver{
   namespace control_command{
@@ -64,6 +52,20 @@ namespace mivia_rover_can_driver{
       can_msgs::msg::Frame::ConstSharedPtr reference_can_ptr_;
 
       rclcpp::TimerBase::SharedPtr timer_;
+
+      struct LogEntry {
+        uint64_t t_start_ns;
+        uint64_t t_end_ns;
+      };
+
+      std::array<LogEntry, 4096> log_buffer_;
+      std::atomic<std::size_t> log_head_{0};
+      std::atomic<std::size_t> log_tail_{0};
+      std::thread logging_thread_;
+      std::atomic<bool> logging_is_running_{false};
+      std::mutex log_mutex_;
+      std::condition_variable log_cv_;
+      void logging_thread_entry_();
 
     public:
       ControlCommand();
